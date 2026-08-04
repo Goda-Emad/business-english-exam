@@ -3,8 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- منع الـ Cache -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>Business English Exam</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=3" />
 </head>
 <body>
 
@@ -125,13 +129,14 @@
             </div>
 
             <div id="review-section" style="display: none; margin-top: 30px;">
-                <h2 style="color: #1a202c;">📖 Answer Review</h2>
+                <h2 style="color: white;">📖 Answer Review</h2>
                 <div id="review-container"></div>
             </div>
         </div>
     </div>
 
-    <script src="questions.js"></script>
-    <script src="script.js"></script>
+    <!-- تحميل الملفات مع Versioning عشان منع الـ Cache -->
+    <script src="questions.js?v=3"></script>
+    <script src="script.js?v=3"></script>
 </body>
 </html>
