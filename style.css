@@ -7,7 +7,6 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    /* خلفية متدرجة جميلة */
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
     min-height: 100vh;
     padding: 20px;
@@ -86,14 +85,6 @@ body {
 .btn-success:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(72, 187, 120, 0.4);
-}
-.btn-danger {
-    background: linear-gradient(135deg, #fc8181 0%, #e53e3e 100%);
-    color: white;
-}
-.btn-danger:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(229, 62, 62, 0.4);
 }
 .btn-large {
     padding: 16px 48px;
@@ -190,7 +181,6 @@ body {
     position: absolute;
     left: 0;
     color: #48bb78;
-    font-weight: bold;
 }
 
 /* ===== Exam Header ===== */
@@ -336,7 +326,7 @@ body {
     color: #2d3748;
 }
 
-/* ===== SELECTED (المستخدم اختارها) ===== */
+/* ===== SELECTED ===== */
 .option-item.selected {
     border-color: #667eea;
     background: #ebf4ff;
@@ -345,7 +335,7 @@ body {
     color: #667eea;
 }
 
-/* ===== CORRECT (الإجابة الصحيحة) ===== */
+/* ===== CORRECT ===== */
 .option-item.correct {
     border-color: #48bb78;
     background: #f0fff4;
@@ -361,7 +351,7 @@ body {
     font-size: 1.2rem;
 }
 
-/* ===== WRONG (الإجابة الغلط) ===== */
+/* ===== WRONG ===== */
 .option-item.wrong {
     border-color: #fc8181;
     background: #fff5f5;
@@ -377,7 +367,7 @@ body {
     font-size: 1.2rem;
 }
 
-/* ===== SHOW CORRECT (عرض الإجابة الصحيحة جنب الغلط) ===== */
+/* ===== SHOW CORRECT ===== */
 .option-item.show-correct {
     border-color: #48bb78;
     background: #f0fff4;
@@ -565,6 +555,12 @@ body {
     .score-circle { width: 120px; height: 120px; }
     .score-number { font-size: 2.2rem; }
     .option-item { padding: 12px 16px; }
+    .option-item.correct::after,
+    .option-item.wrong::after,
+    .option-item.show-correct::after {
+        content: "";
+        display: none;
+    }
 }
 
 @media (max-width: 480px) {
@@ -572,10 +568,4 @@ body {
     .question-text { font-size: 1rem; }
     .option-item { padding: 10px 14px; }
     .results-stats { grid-template-columns: 1fr; gap: 8px; }
-    .option-item.correct::after,
-    .option-item.wrong::after,
-    .option-item.show-correct::after {
-        content: "";
-        display: none;
-    }
 }
