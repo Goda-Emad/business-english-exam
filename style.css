@@ -13,7 +13,6 @@ body {
     color: #2d3748;
 }
 
-/* ===== Container ===== */
 .container {
     max-width: 900px;
     margin: 0 auto;
@@ -24,7 +23,6 @@ body {
     display: none;
     animation: fadeIn 0.5s ease;
 }
-
 .page.active {
     display: block;
 }
@@ -42,100 +40,8 @@ body {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease;
 }
-
 .card:hover {
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
-}
-
-/* ===== Instructions Page ===== */
-.exam-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.badge {
-    display: inline-block;
-    background: #4299e1;
-    color: white;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}
-
-.exam-header h1 {
-    font-size: 2.2rem;
-    margin: 12px 0 8px;
-    color: #1a202c;
-}
-
-.subtitle {
-    color: #718096;
-    font-size: 1.05rem;
-}
-
-.info-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
-    margin: 24px 0;
-}
-
-.info-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #f7fafc;
-    padding: 14px 18px;
-    border-radius: 12px;
-}
-
-.info-item .icon {
-    font-size: 1.6rem;
-}
-
-.info-item strong {
-    display: block;
-    font-size: 0.95rem;
-}
-
-.info-item span {
-    font-size: 0.85rem;
-    color: #718096;
-}
-
-.instructions-list {
-    background: #f7fafc;
-    border-radius: 12px;
-    padding: 20px 28px;
-    margin: 20px 0 30px;
-}
-
-.instructions-list h3 {
-    margin-bottom: 12px;
-    font-size: 1.1rem;
-}
-
-.instructions-list ul {
-    list-style: none;
-    padding: 0;
-}
-
-.instructions-list ul li {
-    padding: 6px 0;
-    padding-left: 24px;
-    position: relative;
-    font-size: 0.98rem;
-    line-height: 1.6;
-}
-
-.instructions-list ul li::before {
-    content: "✓";
-    position: absolute;
-    left: 0;
-    color: #48bb78;
-    font-weight: bold;
 }
 
 /* ===== Buttons ===== */
@@ -151,52 +57,122 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.25s ease;
-    text-decoration: none;
 }
-
 .btn-primary {
     background: #4299e1;
     color: white;
 }
-
 .btn-primary:hover {
     background: #3182ce;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(66, 153, 225, 0.35);
 }
-
 .btn-secondary {
     background: #edf2f7;
     color: #2d3748;
 }
-
 .btn-secondary:hover {
     background: #e2e8f0;
 }
-
 .btn-success {
     background: #48bb78;
     color: white;
 }
-
 .btn-success:hover {
     background: #38a169;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(72, 187, 120, 0.35);
 }
-
 .btn-large {
     padding: 16px 48px;
     font-size: 1.15rem;
 }
-
 .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none !important;
 }
 
-/* ===== Exam Header Bar ===== */
+/* ===== Instructions Page ===== */
+.exam-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.badge {
+    display: inline-block;
+    background: #4299e1;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+}
+.exam-header h1 {
+    font-size: 2.2rem;
+    margin: 12px 0 8px;
+    color: #1a202c;
+}
+.subtitle {
+    color: #718096;
+    font-size: 1.05rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+}
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #f7fafc;
+    padding: 14px 18px;
+    border-radius: 12px;
+}
+.info-item .icon {
+    font-size: 1.6rem;
+}
+.info-item strong {
+    display: block;
+    font-size: 0.95rem;
+}
+.info-item span {
+    font-size: 0.85rem;
+    color: #718096;
+}
+
+.instructions-list {
+    background: #f7fafc;
+    border-radius: 12px;
+    padding: 20px 28px;
+    margin: 20px 0 30px;
+}
+.instructions-list h3 {
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+}
+.instructions-list ul {
+    list-style: none;
+    padding: 0;
+}
+.instructions-list ul li {
+    padding: 6px 0;
+    padding-left: 24px;
+    position: relative;
+    font-size: 0.98rem;
+    line-height: 1.6;
+}
+.instructions-list ul li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #48bb78;
+    font-weight: bold;
+}
+
+/* ===== Exam Header ===== */
 .exam-header-bar {
     display: flex;
     justify-content: space-between;
@@ -205,24 +181,20 @@ body {
     gap: 12px;
     margin-bottom: 16px;
 }
-
 .exam-title {
     font-weight: 700;
     font-size: 1.1rem;
     color: #2d3748;
 }
-
 .header-right {
     display: flex;
     align-items: center;
     gap: 20px;
 }
-
 .question-counter {
     font-weight: 600;
     color: #4a5568;
 }
-
 .timer {
     font-weight: 700;
     color: #e53e3e;
@@ -232,12 +204,9 @@ body {
     border: 1px solid #fed7d7;
     font-size: 0.95rem;
 }
-
 .timer.warning {
-    color: #e53e3e;
     animation: pulse 1s infinite;
 }
-
 @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
@@ -252,7 +221,6 @@ body {
     overflow: hidden;
     margin-bottom: 24px;
 }
-
 .progress-bar {
     height: 100%;
     background: linear-gradient(90deg, #4299e1, #48bb78);
@@ -260,7 +228,7 @@ body {
     transition: width 0.4s ease;
 }
 
-/* ===== Question Card ===== */
+/* ===== Question ===== */
 .question-header {
     display: flex;
     justify-content: space-between;
@@ -269,37 +237,30 @@ body {
     flex-wrap: wrap;
     gap: 8px;
 }
-
 .question-number {
     font-weight: 700;
     font-size: 1.05rem;
     color: #4a5568;
 }
-
 .difficulty-badge {
     font-size: 0.75rem;
     font-weight: 600;
     padding: 4px 14px;
     border-radius: 20px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
-
 .difficulty-badge.easy {
     background: #c6f6d5;
     color: #276749;
 }
-
 .difficulty-badge.medium {
     background: #fefcbf;
     color: #975a16;
 }
-
 .difficulty-badge.hard {
     background: #fed7d7;
     color: #9b2c2c;
 }
-
 .question-text {
     font-size: 1.15rem;
     line-height: 1.7;
@@ -314,7 +275,6 @@ body {
     gap: 10px;
     margin-bottom: 24px;
 }
-
 .option-item {
     display: flex;
     align-items: center;
@@ -326,71 +286,46 @@ body {
     transition: all 0.2s ease;
     background: white;
 }
-
 .option-item:hover:not(.disabled) {
     border-color: #4299e1;
     background: #ebf8ff;
 }
-
 .option-item .letter {
     font-weight: 700;
     color: #4a5568;
     min-width: 28px;
 }
-
 .option-item .text {
     font-size: 0.98rem;
     line-height: 1.5;
 }
-
 .option-item.selected {
     border-color: #4299e1;
     background: #ebf8ff;
 }
-
 .option-item.correct {
     border-color: #48bb78;
     background: #f0fff4;
 }
-
 .option-item.correct .letter {
     color: #276749;
 }
-
 .option-item.wrong {
     border-color: #fc8181;
     background: #fff5f5;
 }
-
 .option-item.wrong .letter {
     color: #9b2c2c;
 }
-
 .option-item.disabled {
     cursor: default;
 }
-
-.option-item.disabled:hover {
+.option-item.disabled:hover:not(.correct):not(.wrong) {
     border-color: #e2e8f0;
     background: white;
 }
 
-.option-item.disabled.selected {
-    background: #ebf8ff;
-    border-color: #4299e1;
-}
-
-.option-item.disabled.correct {
-    background: #f0fff4;
-    border-color: #48bb78;
-}
-
-.option-item.disabled.wrong {
-    background: #fff5f5;
-    border-color: #fc8181;
-}
-
-/* ===== Explanation Box ===== */
+/* ===== Explanation ===== */
 .explanation-box {
     background: #ebf8ff;
     border-left: 4px solid #4299e1;
@@ -398,13 +333,11 @@ body {
     border-radius: 8px;
     margin-bottom: 20px;
 }
-
 .explanation-box h4 {
     color: #2b6cb0;
     margin-bottom: 6px;
     font-size: 0.95rem;
 }
-
 .explanation-box p {
     color: #2d3748;
     font-size: 0.95rem;
@@ -419,22 +352,19 @@ body {
     flex-wrap: wrap;
     gap: 10px;
 }
-
 .navigation-buttons .btn {
     min-width: 120px;
 }
 
-/* ===== Results Page ===== */
+/* ===== Results ===== */
 .results-card {
     text-align: center;
 }
-
 .results-header h1 {
     font-size: 2rem;
     margin-bottom: 20px;
     color: #1a202c;
 }
-
 .score-circle {
     width: 140px;
     height: 140px;
@@ -446,37 +376,31 @@ body {
     margin: 0 auto 24px;
     box-shadow: 0 8px 30px rgba(66, 153, 225, 0.3);
 }
-
 .score-number {
     font-size: 2.6rem;
     font-weight: 800;
     color: white;
 }
-
 .results-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 16px;
     margin: 24px 0 30px;
 }
-
 .stat-item {
     background: #f7fafc;
     padding: 16px;
     border-radius: 12px;
 }
-
 .stat-item .stat-value {
     display: block;
     font-size: 1.8rem;
     font-weight: 700;
 }
-
 .stat-item .stat-label {
     font-size: 0.9rem;
     color: #718096;
 }
-
 .stat-item.correct .stat-value {
     color: #48bb78;
 }
@@ -486,22 +410,19 @@ body {
 .stat-item.total .stat-value {
     color: #4299e1;
 }
-
 .results-card .btn {
     margin: 6px;
 }
 
-/* ===== Review Section ===== */
+/* ===== Review ===== */
 #review-section {
     margin-top: 30px;
 }
-
 #review-section h2 {
     font-size: 1.5rem;
     margin-bottom: 20px;
     color: #1a202c;
 }
-
 .review-item {
     background: white;
     border-radius: 12px;
@@ -510,35 +431,28 @@ body {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
     border-left: 4px solid #e2e8f0;
 }
-
 .review-item.correct-review {
     border-left-color: #48bb78;
 }
-
 .review-item.wrong-review {
     border-left-color: #fc8181;
 }
-
 .review-item .review-q {
     font-weight: 600;
     margin-bottom: 8px;
 }
-
 .review-item .review-answer {
     font-size: 0.95rem;
     color: #4a5568;
 }
-
 .review-item .review-answer .correct-answer {
     color: #276749;
     font-weight: 600;
 }
-
 .review-item .review-answer .wrong-answer {
     color: #9b2c2c;
     font-weight: 600;
 }
-
 .review-item .review-explanation {
     margin-top: 8px;
     font-size: 0.92rem;
@@ -553,67 +467,53 @@ body {
     .card {
         padding: 24px 20px;
     }
-
     .exam-header h1 {
         font-size: 1.6rem;
     }
-
     .info-grid {
         grid-template-columns: 1fr 1fr;
     }
-
     .results-stats {
         grid-template-columns: 1fr 1fr 1fr;
         gap: 10px;
     }
-
     .stat-item .stat-value {
         font-size: 1.4rem;
     }
-
     .navigation-buttons {
         flex-direction: column;
         align-items: stretch;
     }
-
     .navigation-buttons .btn {
         min-width: auto;
         width: 100%;
     }
-
     .exam-header-bar {
         flex-direction: column;
         align-items: flex-start;
     }
-
     .header-right {
         width: 100%;
         justify-content: space-between;
     }
-
     .score-circle {
         width: 110px;
         height: 110px;
     }
-
     .score-number {
         font-size: 2rem;
     }
 }
-
 @media (max-width: 480px) {
     .info-grid {
         grid-template-columns: 1fr;
     }
-
     .question-text {
         font-size: 1rem;
     }
-
     .option-item {
         padding: 10px 14px;
     }
-
     .results-stats {
         grid-template-columns: 1fr;
         gap: 8px;
