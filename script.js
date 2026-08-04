@@ -1,8 +1,18 @@
-// ===== Business English Exam - Main Application =====
-console.log('🚀 SCRIPT LOADED!');
+// ============================================================
+// Business English Exam - Main Application
+// ============================================================
 
-// NOTE: 'questions' is loaded from questions.js
+console.log('🚀 SCRIPT LOADED! (v4)');
 
+// ===== Check if questions are loaded =====
+if (typeof questions === 'undefined') {
+    console.error('❌ questions.js not loaded!');
+    alert('Error: Questions file not loaded.');
+} else {
+    console.log('✅ Questions loaded:', questions.length);
+}
+
+// ===== Variables =====
 let currentQuestionIndex = 0;
 let userAnswers = new Array(150).fill(null);
 let examSubmitted = false;
@@ -34,28 +44,31 @@ const explanationText = document.getElementById('explanation-text');
 const reviewSection = document.getElementById('review-section');
 const reviewContainer = document.getElementById('review-container');
 
-// ===== Check if questions are loaded =====
-if (typeof questions === 'undefined') {
-    console.error('❌ questions.js not loaded!');
-    alert('Error: Questions file not loaded.');
-} else {
-    console.log('✅ Questions loaded:', questions.length);
+// ============================================================
+// ===== START EXAM FUNCTION =====
+// ============================================================
+function startExam() {
+    console.log('🔄 START EXAM FUNCTION CALLED!');
+    console.log('📄 Current page:', document.querySelector('.page.active')?.id);
+    
+    // إخفاء صفحة التعليمات وإظهار صفحة الاختبار
+    pageInstructions.classList.remove('active');
+    pageExam.classList.add('active');
+    
+    console.log('✅ Page switched to exam');
+    
+    // عرض أول سؤال
+    renderQuestion(0);
+    
+    // بدء التايمر
+    startTimer();
+    
+    console.log('✅ Exam started successfully!');
 }
 
-// ===== Show Page =====
-function showPage(pageId) {
-    console.log('📄 Switching to page:', pageId);
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const target = document.getElementById(pageId);
-    if (target) {
-        target.classList.add('active');
-        console.log('✅ Page activated:', pageId);
-    } else {
-        console.error('❌ Page not found:', pageId);
-    }
-}
-
+// ============================================================
 // ===== Timer =====
+// ============================================================
 function startTimer() {
     if (timerStarted) return;
     console.log('⏱️ Timer started!');
@@ -78,7 +91,69 @@ function updateTimerDisplay() {
     else timerEl.classList.remove('warning');
 }
 
+// ============================================================
+// ===== Render Question =====
+// ============================================================
+function renderQuestion(index) {
+    console.log('📝 Rendering question:', index);
+    
+    if (typeof questions === 'undefined') {
+        qText.textContent = '❌ Error: Questions not loaded!';
+        return;
+    }
+
+    const q = questions[index];
+    if (!q) {
+        console.error('Question not found at index:', index);
+        return;
+    }
+
+    qCounter.textContent = `${index + 1} / ${questions.length}`;
+    progressBar.style.width = `${((index + 1) / questions.length) * 100}%`;
+
+    qNumber.textContent = `Question ${index + 1}`;
+    const diffMap = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
+    diffBadge.textContent = diffMap[q.difficulty] || 'Medium';
+    diffBadge.className = `difficulty-badge ${q.difficulty}`;
+
+    qText.textContent = q.question;
+
+    optionsContainer.innerHTML = '';
+    const letters = ['A', 'B', 'C', 'D'];
+    q.options.forEach((option, optIndex) => {
+        const div = document.createElement('div');
+        div.className = 'option-item';
+        div.dataset.index = optIndex;
+
+        div.addEventListener('click', function() {
+            selectOption(index, optIndex);
+        });
+
+        div.innerHTML = `
+            <span class="letter">${letters[optIndex]}.</span>
+            <span class="text">${option}</span>
+        `;
+        optionsContainer.appendChild(div);
+    });
+
+    explanationBox.style.display = 'none';
+    btnPrev.disabled = index === 0;
+    btnNext.disabled = index === questions.length - 1;
+}
+
+// ============================================================
+// ===== Select Option =====
+// ============================================================
+function selectOption(index, optIndex) {
+    if (examSubmitted) return;
+    console.log('📌 Selected option:', optIndex);
+    userAnswers[index] = optIndex;
+    showImmediateFeedback(index, optIndex);
+}
+
+// ============================================================
 // ===== Show Immediate Feedback =====
+// ============================================================
 function showImmediateFeedback(index, selectedIndex) {
     const q = questions[index];
     if (!q) return;
@@ -116,86 +191,9 @@ function showImmediateFeedback(index, selectedIndex) {
     explanationText.textContent = q.explanation;
 }
 
-// ===== Select Option =====
-function selectOption(index, optIndex) {
-    if (examSubmitted) return;
-    userAnswers[index] = optIndex;
-    showImmediateFeedback(index, optIndex);
-}
-
-// ===== Render Question =====
-function renderQuestion(index) {
-    console.log('📝 Rendering question:', index);
-    
-    if (typeof questions === 'undefined') {
-        qText.textContent = '❌ Error: Questions not loaded!';
-        return;
-    }
-
-    const q = questions[index];
-    if (!q) {
-        console.error('Question not found at index:', index);
-        return;
-    }
-
-    qCounter.textContent = `${index + 1} / ${questions.length}`;
-    progressBar.style.width = `${((index + 1) / questions.length) * 100}%`;
-
-    qNumber.textContent = `Question ${index + 1}`;
-    const diffMap = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
-    diffBadge.textContent = diffMap[q.difficulty] || 'Medium';
-    diffBadge.className = `difficulty-badge ${q.difficulty}`;
-
-    qText.textContent = q.question;
-
-    optionsContainer.innerHTML = '';
-    const letters = ['A', 'B', 'C', 'D'];
-    q.options.forEach((option, optIndex) => {
-        const div = document.createElement('div');
-        div.className = 'option-item';
-        div.dataset.index = optIndex;
-
-        const userAns = userAnswers[index];
-        if (userAns !== null && !examSubmitted) {
-            div.classList.add('disabled');
-            if (optIndex === q.correct) div.classList.add('correct');
-            if (optIndex === userAns && userAns !== q.correct) div.classList.add('wrong');
-            if (optIndex === userAns) div.classList.add('selected');
-            if (optIndex === q.correct && optIndex !== userAns) div.classList.add('show-correct');
-            explanationBox.style.display = 'block';
-            explanationText.textContent = q.explanation;
-        } else if (!examSubmitted) {
-            div.addEventListener('click', function() {
-                selectOption(index, optIndex);
-            });
-        }
-
-        if (examSubmitted) {
-            div.classList.add('disabled');
-            if (optIndex === q.correct) div.classList.add('correct');
-            if (userAnswers[index] === optIndex && userAnswers[index] !== q.correct) div.classList.add('wrong');
-            if (userAnswers[index] === optIndex) div.classList.add('selected');
-        }
-
-        div.innerHTML = `
-            <span class="letter">${letters[optIndex]}.</span>
-            <span class="text">${option}</span>
-        `;
-        optionsContainer.appendChild(div);
-    });
-
-    if (examSubmitted || userAnswers[index] !== null) {
-        explanationBox.style.display = 'block';
-        explanationText.textContent = q.explanation;
-    } else {
-        explanationBox.style.display = 'none';
-    }
-
-    btnPrev.disabled = index === 0;
-    btnNext.disabled = index === questions.length - 1;
-}
-
+// ============================================================
 // ===== Navigation =====
+// ============================================================
 function goToPrev() {
     if (currentQuestionIndex > 0) {
         currentQuestionIndex--;
@@ -210,7 +208,9 @@ function goToNext() {
     }
 }
 
+// ============================================================
 // ===== Submit Exam =====
+// ============================================================
 function submitExam() {
     if (examSubmitted) return;
     const answered = userAnswers.filter(a => a !== null).length;
@@ -219,11 +219,14 @@ function submitExam() {
     }
     examSubmitted = true;
     clearInterval(timerInterval);
-    showPage('page-results');
+    pageExam.classList.remove('active');
+    pageResults.classList.add('active');
     displayResults();
 }
 
+// ============================================================
 // ===== Display Results =====
+// ============================================================
 function displayResults() {
     let correct = 0;
     let wrong = 0;
@@ -247,7 +250,30 @@ function displayResults() {
     window._reviewData = reviewData;
 }
 
+// ============================================================
+// ===== Restart Exam =====
+// ============================================================
+function restartExam() {
+    if (!confirm('Restart exam? All progress lost.')) return;
+    clearInterval(timerInterval);
+    timerStarted = false;
+    timeRemaining = 3600;
+    examSubmitted = false;
+    userAnswers = new Array(150).fill(null);
+    currentQuestionIndex = 0;
+    timerEl.classList.remove('warning');
+    updateTimerDisplay();
+    reviewSection.style.display = 'none';
+    btnReview.textContent = '📖 Review Answers';
+    pageResults.classList.remove('active');
+    pageExam.classList.add('active');
+    renderQuestion(0);
+    startTimer();
+}
+
+// ============================================================
 // ===== Toggle Review =====
+// ============================================================
 function toggleReview() {
     if (reviewSection.style.display === 'none') {
         reviewSection.style.display = 'block';
@@ -282,38 +308,9 @@ function renderReview() {
     });
 }
 
-// ===== Restart Exam =====
-function restartExam() {
-    if (!confirm('Restart exam? All progress lost.')) return;
-    clearInterval(timerInterval);
-    timerStarted = false;
-    timeRemaining = 3600;
-    examSubmitted = false;
-    userAnswers = new Array(150).fill(null);
-    currentQuestionIndex = 0;
-    timerEl.classList.remove('warning');
-    updateTimerDisplay();
-    reviewSection.style.display = 'none';
-    btnReview.textContent = '📖 Review Answers';
-    showPage('page-exam');
-    renderQuestion(0);
-    startTimer();
-}
-
 // ============================================================
-// ===== START EXAM FUNCTION (مشتركة بين onclick و addEventListener) =====
-// ============================================================
-function startExam() {
-    console.log('🔄 START EXAM FUNCTION CALLED!');
-    showPage('page-exam');
-    renderQuestion(0);
-    startTimer();
-    console.log('✅ Exam started successfully!');
-}
-
 // ===== Event Listeners =====
-// الزر مش هنضيف له Event Listener عشان عندنا onclick في الـ HTML
-
+// ============================================================
 btnPrev.addEventListener('click', goToPrev);
 btnNext.addEventListener('click', goToNext);
 
@@ -325,7 +322,9 @@ btnSubmit.addEventListener('click', function() {
 btnRestart.addEventListener('click', restartExam);
 btnReview.addEventListener('click', toggleReview);
 
+// ============================================================
 // ===== Keyboard Shortcuts =====
+// ============================================================
 document.addEventListener('keydown', function(e) {
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         if (!examSubmitted && !btnNext.disabled) goToNext();
@@ -334,10 +333,9 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+// ============================================================
 // ===== Init =====
-showPage('page-instructions');
-updateTimerDisplay();
-
+// ============================================================
 console.log('✅ Business English Exam ready!');
 console.log('📝 Total questions:', questions ? questions.length : 'ERROR');
 console.log('🔍 startExam function:', typeof startExam);
