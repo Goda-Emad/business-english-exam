@@ -1,9 +1,8 @@
 // ===== Business English Exam - Main Application =====
-console.log('🚀 SCRIPT VERSION: 3.1 - Fixed Start Button');
+console.log('🚀 SCRIPT VERSION: 4.0 - ULTIMATE FIX');
 console.log('📅 Loaded at:', new Date().toLocaleString());
 
 // NOTE: 'questions' is loaded from questions.js (global variable)
-// DO NOT declare 'const questions' or 'var questions' in this file!
 
 let currentQuestionIndex = 0;
 let userAnswers = new Array(150).fill(null);
@@ -12,7 +11,7 @@ let timerInterval = null;
 let timeRemaining = 3600;
 let timerStarted = false;
 
-// DOM Elements
+// ===== DOM Elements =====
 const pageInstructions = document.getElementById('page-instructions');
 const pageExam = document.getElementById('page-exam');
 const pageResults = document.getElementById('page-results');
@@ -80,37 +79,21 @@ function updateTimerDisplay() {
     else timerEl.classList.remove('warning');
 }
 
-// ===== Select Option (مع التصحيح الفوري) =====
-function selectOption(index, optIndex) {
-    if (examSubmitted) return;
-    
-    // حفظ إجابة المستخدم
-    userAnswers[index] = optIndex;
-    
-    // عرض التصحيح الفوري
-    showImmediateFeedback(index, optIndex);
-}
-
-// ===== عرض التصحيح الفوري =====
+// ===== Show Immediate Feedback =====
 function showImmediateFeedback(index, selectedIndex) {
     const q = questions[index];
     if (!q) return;
     
-    // جلب جميع خيارات السؤال
     const options = document.querySelectorAll('.option-item');
     
-    // إزالة أي تصنيفات سابقة
     options.forEach(opt => {
         opt.classList.remove('selected', 'correct', 'wrong', 'show-correct', 'disabled');
     });
     
-    // تحديد الإجابة المختارة
     options.forEach((opt, i) => {
-        // تعطيل جميع الخيارات بعد الاختيار
         opt.classList.add('disabled');
         
         if (i === selectedIndex) {
-            // الإجابة اللي اختارها المستخدم
             if (i === q.correct) {
                 opt.classList.add('correct');
                 opt.classList.add('selected');
@@ -120,29 +103,29 @@ function showImmediateFeedback(index, selectedIndex) {
             }
         }
         
-        // إظهار الإجابة الصحيحة (دائماً)
         if (i === q.correct && i !== selectedIndex) {
             opt.classList.add('show-correct');
         }
         
-        // لو الإجابة الصحيحة هي نفس اللي اختارها المستخدم
         if (i === q.correct && i === selectedIndex) {
             opt.classList.remove('show-correct');
             opt.classList.add('correct');
         }
     });
     
-    // عرض الشرح
-    const explanationBox = document.getElementById('explanation-box');
-    const explanationText = document.getElementById('explanation-text');
     explanationBox.style.display = 'block';
     explanationText.textContent = q.explanation;
-    
-    // إضافة تأثير
     explanationBox.style.animation = 'none';
     setTimeout(() => {
         explanationBox.style.animation = 'slideDown 0.4s ease';
     }, 10);
+}
+
+// ===== Select Option =====
+function selectOption(index, optIndex) {
+    if (examSubmitted) return;
+    userAnswers[index] = optIndex;
+    showImmediateFeedback(index, optIndex);
 }
 
 // ===== Render Question =====
@@ -160,20 +143,16 @@ function renderQuestion(index) {
         return;
     }
 
-    // Update counter & progress
     qCounter.textContent = `${index + 1} / ${questions.length}`;
     progressBar.style.width = `${((index + 1) / questions.length) * 100}%`;
 
-    // Question number & difficulty
     qNumber.textContent = `Question ${index + 1}`;
     const diffMap = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
     diffBadge.textContent = diffMap[q.difficulty] || 'Medium';
     diffBadge.className = `difficulty-badge ${q.difficulty}`;
 
-    // Question text
     qText.textContent = q.question;
 
-    // Options
     optionsContainer.innerHTML = '';
     const letters = ['A', 'B', 'C', 'D'];
     q.options.forEach((option, optIndex) => {
@@ -181,7 +160,6 @@ function renderQuestion(index) {
         div.className = 'option-item';
         div.dataset.index = optIndex;
 
-        // لو السؤال جاوب عليه قبل كده (في نفس الجلسة)
         const userAns = userAnswers[index];
         if (userAns !== null && !examSubmitted) {
             div.classList.add('disabled');
@@ -189,8 +167,6 @@ function renderQuestion(index) {
             if (optIndex === userAns && userAns !== q.correct) div.classList.add('wrong');
             if (optIndex === userAns) div.classList.add('selected');
             if (optIndex === q.correct && optIndex !== userAns) div.classList.add('show-correct');
-            
-            // إظهار الشرح
             explanationBox.style.display = 'block';
             explanationText.textContent = q.explanation;
         } else if (!examSubmitted) {
@@ -199,7 +175,6 @@ function renderQuestion(index) {
             });
         }
 
-        // بعد تقديم الاختبار
         if (examSubmitted) {
             div.classList.add('disabled');
             if (optIndex === q.correct) div.classList.add('correct');
@@ -214,7 +189,6 @@ function renderQuestion(index) {
         optionsContainer.appendChild(div);
     });
 
-    // Explanation (لو السؤال مش مجاب عليه)
     if (examSubmitted || userAnswers[index] !== null) {
         explanationBox.style.display = 'block';
         explanationText.textContent = q.explanation;
@@ -222,7 +196,6 @@ function renderQuestion(index) {
         explanationBox.style.display = 'none';
     }
 
-    // Navigation buttons
     btnPrev.disabled = index === 0;
     btnNext.disabled = index === questions.length - 1;
 }
@@ -342,20 +315,8 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ============================================================
-// ===== START BUTTON - FIXED (طريقتين معاً للأمان) =====
+// ===== START BUTTON - ULTIMATE FIX =====
 // ============================================================
-
-// الطريقة الأولى: onclick مباشر
-btnStart.onclick = function() {
-    console.log('🚀 START clicked! (onclick)');
-    startExam();
-};
-
-// الطريقة الثانية: addEventListener (احتياطي)
-btnStart.addEventListener('click', function() {
-    console.log('🚀 START clicked! (addEventListener)');
-    startExam();
-});
 
 // دالة بدء الاختبار
 function startExam() {
@@ -365,6 +326,22 @@ function startExam() {
     startTimer();
     console.log('✅ Exam started successfully!');
 }
+
+// ربط الزر بالدالة (ثلاث طرق للأمان)
+// الطريقة 1: onclick
+btnStart.onclick = function() {
+    console.log('🚀 START clicked! (onclick)');
+    startExam();
+};
+
+// الطريقة 2: addEventListener
+btnStart.addEventListener('click', function() {
+    console.log('🚀 START clicked! (addEventListener)');
+    startExam();
+});
+
+// الطريقة 3: باستخدام onclick مباشر في الـ HTML (كمان أمان)
+// دي هتتضاف في الـ HTML كـ onclick="startExam()"
 
 // ===== Other Event Listeners =====
 btnPrev.addEventListener('click', goToPrev);
@@ -386,17 +363,21 @@ console.log('✅ Business English Exam ready!');
 console.log('📝 Total questions:', questions ? questions.length : 'ERROR');
 console.log('🔍 btnStart element:', btnStart);
 console.log('🔍 btnStart text:', btnStart ? btnStart.textContent : 'NOT FOUND');
-console.log('🔍 btnStart onclick:', btnStart ? btnStart.onclick : 'NOT SET');
 
-// ===== اختبار تلقائي للزر =====
-console.log('🔄 Auto-test: Trying to start exam from console...');
-// اختبر إن الدالة شغالة
+// ===== Auto-test =====
+console.log('🔄 Running auto-test...');
 try {
     if (typeof startExam === 'function') {
         console.log('✅ startExam function is defined');
     } else {
         console.log('❌ startExam function NOT defined');
     }
+    if (btnStart) {
+        console.log('✅ btnStart exists');
+    } else {
+        console.log('❌ btnStart NOT found');
+    }
 } catch(e) {
-    console.error('Error testing startExam:', e);
+    console.error('Error during auto-test:', e);
 }
+console.log('🔄 Auto-test complete.');
