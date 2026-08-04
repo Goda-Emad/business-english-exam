@@ -1,8 +1,7 @@
 // ===== Business English Exam - Main Application =====
-console.log('🚀 SCRIPT VERSION: 4.0 - ULTIMATE FIX');
-console.log('📅 Loaded at:', new Date().toLocaleString());
+console.log('🚀 SCRIPT LOADED!');
 
-// NOTE: 'questions' is loaded from questions.js (global variable)
+// NOTE: 'questions' is loaded from questions.js
 
 let currentQuestionIndex = 0;
 let userAnswers = new Array(150).fill(null);
@@ -115,10 +114,6 @@ function showImmediateFeedback(index, selectedIndex) {
     
     explanationBox.style.display = 'block';
     explanationText.textContent = q.explanation;
-    explanationBox.style.animation = 'none';
-    setTimeout(() => {
-        explanationBox.style.animation = 'slideDown 0.4s ease';
-    }, 10);
 }
 
 // ===== Select Option =====
@@ -305,45 +300,20 @@ function restartExam() {
     startTimer();
 }
 
-// ===== Keyboard Shortcuts =====
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        if (!examSubmitted && !btnNext.disabled) goToNext();
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        if (!examSubmitted && !btnPrev.disabled) goToPrev();
-    }
-});
-
 // ============================================================
-// ===== START BUTTON - ULTIMATE FIX =====
+// ===== START EXAM FUNCTION (مشتركة بين onclick و addEventListener) =====
 // ============================================================
-
-// دالة بدء الاختبار
 function startExam() {
-    console.log('🔄 Starting exam...');
+    console.log('🔄 START EXAM FUNCTION CALLED!');
     showPage('page-exam');
     renderQuestion(0);
     startTimer();
     console.log('✅ Exam started successfully!');
 }
 
-// ربط الزر بالدالة (ثلاث طرق للأمان)
-// الطريقة 1: onclick
-btnStart.onclick = function() {
-    console.log('🚀 START clicked! (onclick)');
-    startExam();
-};
+// ===== Event Listeners =====
+// الزر مش هنضيف له Event Listener عشان عندنا onclick في الـ HTML
 
-// الطريقة 2: addEventListener
-btnStart.addEventListener('click', function() {
-    console.log('🚀 START clicked! (addEventListener)');
-    startExam();
-});
-
-// الطريقة 3: باستخدام onclick مباشر في الـ HTML (كمان أمان)
-// دي هتتضاف في الـ HTML كـ onclick="startExam()"
-
-// ===== Other Event Listeners =====
 btnPrev.addEventListener('click', goToPrev);
 btnNext.addEventListener('click', goToNext);
 
@@ -355,29 +325,29 @@ btnSubmit.addEventListener('click', function() {
 btnRestart.addEventListener('click', restartExam);
 btnReview.addEventListener('click', toggleReview);
 
+// ===== Keyboard Shortcuts =====
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        if (!examSubmitted && !btnNext.disabled) goToNext();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        if (!examSubmitted && !btnPrev.disabled) goToPrev();
+    }
+});
+
 // ===== Init =====
 showPage('page-instructions');
 updateTimerDisplay();
 
 console.log('✅ Business English Exam ready!');
 console.log('📝 Total questions:', questions ? questions.length : 'ERROR');
+console.log('🔍 startExam function:', typeof startExam);
 console.log('🔍 btnStart element:', btnStart);
-console.log('🔍 btnStart text:', btnStart ? btnStart.textContent : 'NOT FOUND');
 
-// ===== Auto-test =====
+// ===== اختبار تلقائي =====
 console.log('🔄 Running auto-test...');
-try {
-    if (typeof startExam === 'function') {
-        console.log('✅ startExam function is defined');
-    } else {
-        console.log('❌ startExam function NOT defined');
-    }
-    if (btnStart) {
-        console.log('✅ btnStart exists');
-    } else {
-        console.log('❌ btnStart NOT found');
-    }
-} catch(e) {
-    console.error('Error during auto-test:', e);
+if (typeof startExam === 'function') {
+    console.log('✅ startExam function is defined and ready!');
+} else {
+    console.log('❌ startExam function NOT defined!');
 }
 console.log('🔄 Auto-test complete.');
