@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business English Exam</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Instructions Page -->
+    <div id="instructions-page" class="page active">
+        <div class="container">
+            <div class="card">
+                <div class="exam-header">
+                    <span class="badge">📚 Business English</span>
+                    <h1>Interactive MCQ Exam</h1>
+                    <p class="subtitle">Complete Lecture Notes — Vocabulary, Expressions & Grammar</p>
+                </div>
+                
+                <div class="instructions-content">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="icon">📝</span>
+                            <div>
+                                <strong>150 Questions</strong>
+                                <span>Covering all chapters</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="icon">⏱️</span>
+                            <div>
+                                <strong>60 Minutes</strong>
+                                <span>Time limit</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="icon">🎯</span>
+                            <div>
+                                <strong>Difficulty</strong>
+                                <span>30% Easy · 50% Medium · 20% Hard</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="icon">📊</span>
+                            <div>
+                                <strong>Instant Feedback</strong>
+                                <span>Score & explanations after submission</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="instructions-list">
+                        <h3>📋 Instructions</h3>
+                        <ul>
+                            <li>Answer all <strong>150</strong> multiple-choice questions</li>
+                            <li>Each question has <strong>4 options</strong> (A, B, C, D)</li>
+                            <li>You can navigate using <strong>Next / Previous</strong> buttons</li>
+                            <li>Use the <strong>progress bar</strong> to track your progress</li>
+                            <li>Click <strong>Submit Exam</strong> when you're done</li>
+                            <li>You'll get your score and explanations for each question</li>
+                        </ul>
+                    </div>
+
+                    <button id="start-exam-btn" class="btn btn-primary btn-large">
+                        🚀 Start Exam
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam Page -->
+    <div id="exam-page" class="page">
+        <div class="container">
+            <div class="exam-header-bar">
+                <div class="header-left">
+                    <span class="exam-title">📚 Business English Exam</span>
+                </div>
+                <div class="header-right">
+                    <span class="question-counter" id="question-counter">1 / 150</span>
+                    <span class="timer" id="timer">⏱️ 60:00</span>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+            </div>
+
+            <div class="card question-card" id="question-card">
+                <div class="question-header">
+                    <span class="question-number" id="question-number">Question 1</span>
+                    <span class="difficulty-badge" id="difficulty-badge">Easy</span>
+                </div>
+                <p class="question-text" id="question-text">Loading question...</p>
+                
+                <div class="options-container" id="options-container">
+                    <!-- Options will be rendered here -->
+                </div>
+
+                <div class="explanation-box" id="explanation-box" style="display: none;">
+                    <h4>💡 Explanation</h4>
+                    <p id="explanation-text"></p>
+                </div>
+
+                <div class="navigation-buttons">
+                    <button id="prev-btn" class="btn btn-secondary">◀ Previous</button>
+                    <button id="submit-btn" class="btn btn-success">📤 Submit Exam</button>
+                    <button id="next-btn" class="btn btn-secondary">Next ▶</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Page -->
+    <div id="results-page" class="page">
+        <div class="container">
+            <div class="card results-card">
+                <div class="results-header">
+                    <h1>📊 Exam Results</h1>
+                    <div class="score-circle" id="score-circle">
+                        <span class="score-number" id="score-number">0%</span>
+                    </div>
+                </div>
+
+                <div class="results-stats">
+                    <div class="stat-item correct">
+                        <span class="stat-value" id="correct-count">0</span>
+                        <span class="stat-label">✅ Correct</span>
+                    </div>
+                    <div class="stat-item wrong">
+                        <span class="stat-value" id="wrong-count">0</span>
+                        <span class="stat-label">❌ Wrong</span>
+                    </div>
+                    <div class="stat-item total">
+                        <span class="stat-value" id="total-questions">150</span>
+                        <span class="stat-label">📝 Total</span>
+                    </div>
+                </div>
+
+                <button id="restart-btn" class="btn btn-primary">🔄 Restart Exam</button>
+                <button id="review-btn" class="btn btn-secondary">📖 Review Answers</button>
+            </div>
+
+            <!-- Review Section -->
+            <div id="review-section" style="display: none;">
+                <h2>📖 Answer Review</h2>
+                <div id="review-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="questions.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
