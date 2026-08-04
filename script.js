@@ -36,12 +36,12 @@ const reviewContainer = document.getElementById('review-container');
 // ===== Check if questions are loaded =====
 if (typeof questions === 'undefined') {
     console.error('❌ questions.js not loaded!');
-    alert('Error: Questions file not loaded. Please check your files.');
+    alert('Error: Questions file not loaded.');
 } else {
     console.log('✅ Questions loaded:', questions.length);
 }
 
-// ===== Helper: Show Page =====
+// ===== Show Page =====
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
@@ -65,11 +65,8 @@ function updateTimerDisplay() {
     const mins = Math.floor(timeRemaining / 60);
     const secs = timeRemaining % 60;
     timerEl.textContent = `⏱️ ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-    if (timeRemaining < 300) {
-        timerEl.classList.add('warning');
-    } else {
-        timerEl.classList.remove('warning');
-    }
+    if (timeRemaining < 300) timerEl.classList.add('warning');
+    else timerEl.classList.remove('warning');
 }
 
 // ===== Render Question =====
@@ -85,20 +82,16 @@ function renderQuestion(index) {
         return;
     }
 
-    // Update counter & progress
     qCounter.textContent = `${index + 1} / ${questions.length}`;
     progressBar.style.width = `${((index + 1) / questions.length) * 100}%`;
 
-    // Question number & difficulty
     qNumber.textContent = `Question ${index + 1}`;
     const diffMap = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
     diffBadge.textContent = diffMap[q.difficulty] || 'Medium';
     diffBadge.className = `difficulty-badge ${q.difficulty}`;
 
-    // Question text
     qText.textContent = q.question;
 
-    // Options
     optionsContainer.innerHTML = '';
     const letters = ['A', 'B', 'C', 'D'];
     q.options.forEach((option, optIndex) => {
@@ -108,16 +101,10 @@ function renderQuestion(index) {
         if (examSubmitted) {
             div.classList.add('disabled');
             if (optIndex === q.correct) div.classList.add('correct');
-            if (userAnswers[index] === optIndex && userAnswers[index] !== q.correct) {
-                div.classList.add('wrong');
-            }
-            if (userAnswers[index] === optIndex) {
-                div.classList.add('selected');
-            }
+            if (userAnswers[index] === optIndex && userAnswers[index] !== q.correct) div.classList.add('wrong');
+            if (userAnswers[index] === optIndex) div.classList.add('selected');
         } else {
-            if (userAnswers[index] === optIndex) {
-                div.classList.add('selected');
-            }
+            if (userAnswers[index] === optIndex) div.classList.add('selected');
             div.addEventListener('click', function() {
                 selectOption(index, optIndex);
             });
@@ -130,7 +117,6 @@ function renderQuestion(index) {
         optionsContainer.appendChild(div);
     });
 
-    // Explanation
     if (examSubmitted) {
         explanationBox.style.display = 'block';
         explanationText.textContent = q.explanation;
@@ -138,7 +124,6 @@ function renderQuestion(index) {
         explanationBox.style.display = 'none';
     }
 
-    // Navigation buttons
     btnPrev.disabled = index === 0;
     btnNext.disabled = index === questions.length - 1;
 }
@@ -170,9 +155,7 @@ function submitExam() {
     if (examSubmitted) return;
     const answered = userAnswers.filter(a => a !== null).length;
     if (answered < questions.length) {
-        if (!confirm(`You have answered ${answered} out of ${questions.length} questions. Do you want to submit anyway?`)) {
-            return;
-        }
+        if (!confirm(`You have answered ${answered} out of ${questions.length}. Submit anyway?`)) return;
     }
     examSubmitted = true;
     clearInterval(timerInterval);
@@ -241,7 +224,7 @@ function renderReview() {
 
 // ===== Restart Exam =====
 function restartExam() {
-    if (!confirm('Are you sure you want to restart the exam? All progress will be lost.')) return;
+    if (!confirm('Restart exam? All progress lost.')) return;
     clearInterval(timerInterval);
     timerStarted = false;
     timeRemaining = 3600;
@@ -268,7 +251,7 @@ document.addEventListener('keydown', function(e) {
 
 // ===== Event Listeners =====
 btnStart.addEventListener('click', function(e) {
-    console.log('Start button clicked!');
+    console.log('🚀 Start button clicked!');
     showPage('page-exam');
     renderQuestion(0);
     startTimer();
@@ -279,9 +262,7 @@ btnNext.addEventListener('click', goToNext);
 
 btnSubmit.addEventListener('click', function() {
     if (examSubmitted) return;
-    if (confirm('Are you sure you want to submit the exam?')) {
-        submitExam();
-    }
+    if (confirm('Submit exam?')) submitExam();
 });
 
 btnRestart.addEventListener('click', restartExam);
