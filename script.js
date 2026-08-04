@@ -1,10 +1,11 @@
 // ===== Business English Exam - Main Application =====
+// Note: 'questions' is loaded from questions.js (global variable)
 
 let currentQuestionIndex = 0;
 let userAnswers = new Array(150).fill(null);
 let examSubmitted = false;
 let timerInterval = null;
-let timeRemaining = 3600; // 60 minutes
+let timeRemaining = 3600;
 let timerStarted = false;
 
 // DOM Elements
@@ -31,7 +32,13 @@ const explanationText = document.getElementById('explanation-text');
 const reviewSection = document.getElementById('review-section');
 const reviewContainer = document.getElementById('review-container');
 
-// ===== Navigation =====
+// ===== Check if questions are loaded =====
+if (typeof questions === 'undefined') {
+    console.error('❌ questions.js not loaded!');
+    alert('Error: Questions file not loaded. Please check your files.');
+}
+
+// ===== Helper: Show Page =====
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(pageId).classList.add('active');
@@ -56,25 +63,36 @@ function updateTimerDisplay() {
     const secs = timeRemaining % 60;
     timerEl.textContent = `⏱️ ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
     if (timeRemaining < 300) timerEl.classList.add('warning');
+    else timerEl.classList.remove('warning');
 }
 
 // ===== Render Question =====
 function renderQuestion(index) {
-    const q = questions[index];
-    if (!q) return;
+    if (typeof questions === 'undefined') {
+        qText.textContent = '❌ Error: Questions not loaded!';
+        return;
+    }
 
+    const q = questions[index];
+    if (!q) {
+        console.error('Question not found at index:', index);
+        return;
+    }
+
+    // Update counter & progress
     qCounter.textContent = `${index + 1} / ${questions.length}`;
     progressBar.style.width = `${((index + 1) / questions.length) * 100}%`;
 
-    qNumber.textContent = `سؤال ${index + 1}`;
-
-    const diffMap = { easy: 'سهل', medium: 'متوسط', hard: 'صعب' };
-    diffBadge.textContent = diffMap[q.difficulty] || 'متوسط';
+    // Question number & difficulty
+    qNumber.textContent = `Question ${index + 1}`;
+    const diffMap = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
+    diffBadge.textContent = diffMap[q.difficulty] || 'Medium';
     diffBadge.className = `difficulty-badge ${q.difficulty}`;
 
+    // Question text
     qText.textContent = q.question;
 
-    // Render options
+    // Options
     optionsContainer.innerHTML = '';
     const letters = ['A', 'B', 'C', 'D'];
     q.options.forEach((option, optIndex) => {
@@ -106,6 +124,7 @@ function renderQuestion(index) {
         explanationBox.style.display = 'none';
     }
 
+    // Navigation buttons
     btnPrev.disabled = index === 0;
     btnNext.disabled = index === questions.length - 1;
 }
@@ -137,7 +156,9 @@ function submitExam() {
     if (examSubmitted) return;
     const answered = userAnswers.filter(a => a !== null).length;
     if (answered < questions.length) {
-        if (!confirm(`لقد أجبت على ${answered} من أصل ${questions.length} سؤال. هل تريد التقديم؟`)) return;
+        if (!confirm(`You have answered ${answered} out of ${questions.length} questions. Do you want to submit anyway?`)) {
+            return;
+        }
     }
     examSubmitted = true;
     clearInterval(timerInterval);
@@ -173,11 +194,11 @@ function displayResults() {
 function toggleReview() {
     if (reviewSection.style.display === 'none') {
         reviewSection.style.display = 'block';
-        btnReview.textContent = '📖 إخفاء المراجعة';
+        btnReview.textContent = '📖 Hide Review';
         renderReview();
     } else {
         reviewSection.style.display = 'none';
-        btnReview.textContent = '📖 مراجعة الإجابات';
+        btnReview.textContent = '📖 Review Answers';
     }
 }
 
@@ -189,14 +210,14 @@ function renderReview() {
     data.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = `review-item ${item.isCorrect ? 'correct-review' : 'wrong-review'}`;
-        const userLetter = item.userAnswer !== null ? letters[item.userAnswer] : 'لم يجب';
+        const userLetter = item.userAnswer !== null ? letters[item.userAnswer] : 'Not answered';
         const correctLetter = letters[item.question.correct];
 
         div.innerHTML = `
             <div class="review-q">${index + 1}. ${item.question.question}</div>
             <div class="review-answer">
-                إجابتك: <span class="${item.isCorrect ? 'correct-answer' : 'wrong-answer'}">${userLetter}</span>
-                ${!item.isCorrect ? ` | الصحيح: <span class="correct-answer">${correctLetter}</span>` : ''}
+                Your answer: <span class="${item.isCorrect ? 'correct-answer' : 'wrong-answer'}">${userLetter}</span>
+                ${!item.isCorrect ? ` | Correct: <span class="correct-answer">${correctLetter}</span>` : ''}
             </div>
             <div class="review-explanation">💡 ${item.question.explanation}</div>
         `;
@@ -206,7 +227,7 @@ function renderReview() {
 
 // ===== Restart Exam =====
 function restartExam() {
-    if (!confirm('هل أنت متأكد من إعادة الاختبار؟ سيتم فقدان كل التقدم.')) return;
+    if (!confirm('Are you sure you want to restart the exam? All progress will be lost.')) return;
     clearInterval(timerInterval);
     timerStarted = false;
     timeRemaining = 3600;
@@ -216,7 +237,7 @@ function restartExam() {
     timerEl.classList.remove('warning');
     updateTimerDisplay();
     reviewSection.style.display = 'none';
-    btnReview.textContent = '📖 مراجعة الإجابات';
+    btnReview.textContent = '📖 Review Answers';
     showPage('page-exam');
     renderQuestion(0);
     startTimer();
@@ -232,7 +253,8 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ===== Event Listeners =====
-btnStart.addEventListener('click', () => {
+btnStart.addEventListener('click', function(e) {
+    console.log('Start button clicked!');
     showPage('page-exam');
     renderQuestion(0);
     startTimer();
@@ -241,9 +263,11 @@ btnStart.addEventListener('click', () => {
 btnPrev.addEventListener('click', goToPrev);
 btnNext.addEventListener('click', goToNext);
 
-btnSubmit.addEventListener('click', () => {
+btnSubmit.addEventListener('click', function() {
     if (examSubmitted) return;
-    if (confirm('هل أنت متأكد من تقديم الاختبار؟')) submitExam();
+    if (confirm('Are you sure you want to submit the exam?')) {
+        submitExam();
+    }
 });
 
 btnRestart.addEventListener('click', restartExam);
@@ -254,4 +278,4 @@ showPage('page-instructions');
 updateTimerDisplay();
 
 console.log('✅ Business English Exam loaded successfully!');
-console.log(`📝 Total questions: ${questions.length}`);
+console.log('📝 Total questions:', questions ? questions.length : 'ERROR: questions not loaded');
