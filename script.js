@@ -1,5 +1,5 @@
 // ===== Business English Exam - Main Application =====
-console.log('🚀 SCRIPT VERSION: 3.0 - Updated with new CSS and features!');
+console.log('🚀 SCRIPT VERSION: 3.1 - Fixed Start Button');
 console.log('📅 Loaded at:', new Date().toLocaleString());
 
 // NOTE: 'questions' is loaded from questions.js (global variable)
@@ -341,13 +341,30 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// ===== START BUTTON =====
+// ============================================================
+// ===== START BUTTON - FIXED (طريقتين معاً للأمان) =====
+// ============================================================
+
+// الطريقة الأولى: onclick مباشر
 btnStart.onclick = function() {
-    console.log('🚀 START clicked!');
+    console.log('🚀 START clicked! (onclick)');
+    startExam();
+};
+
+// الطريقة الثانية: addEventListener (احتياطي)
+btnStart.addEventListener('click', function() {
+    console.log('🚀 START clicked! (addEventListener)');
+    startExam();
+});
+
+// دالة بدء الاختبار
+function startExam() {
+    console.log('🔄 Starting exam...');
     showPage('page-exam');
     renderQuestion(0);
     startTimer();
-};
+    console.log('✅ Exam started successfully!');
+}
 
 // ===== Other Event Listeners =====
 btnPrev.addEventListener('click', goToPrev);
@@ -369,3 +386,17 @@ console.log('✅ Business English Exam ready!');
 console.log('📝 Total questions:', questions ? questions.length : 'ERROR');
 console.log('🔍 btnStart element:', btnStart);
 console.log('🔍 btnStart text:', btnStart ? btnStart.textContent : 'NOT FOUND');
+console.log('🔍 btnStart onclick:', btnStart ? btnStart.onclick : 'NOT SET');
+
+// ===== اختبار تلقائي للزر =====
+console.log('🔄 Auto-test: Trying to start exam from console...');
+// اختبر إن الدالة شغالة
+try {
+    if (typeof startExam === 'function') {
+        console.log('✅ startExam function is defined');
+    } else {
+        console.log('❌ startExam function NOT defined');
+    }
+} catch(e) {
+    console.error('Error testing startExam:', e);
+}
