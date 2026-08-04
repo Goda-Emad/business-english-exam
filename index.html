@@ -3,12 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- منع الـ Cache -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
     <title>Business English Exam</title>
-    <link rel="stylesheet" href="style.css?v=3" />
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -53,7 +49,10 @@
                     </ul>
                 </div>
 
-                <button id="btn-start" class="btn btn-primary btn-large">🚀 Start Exam</button>
+                <!-- ✅ هنا الزر مع onclick مباشر -->
+                <button id="btn-start" class="btn btn-primary btn-large" onclick="startExam()">
+                    🚀 Start Exam
+                </button>
             </div>
         </div>
     </div>
@@ -135,8 +134,8 @@
         </div>
     </div>
 
-    <!-- تحميل الملفات مع Versioning عشان منع الـ Cache -->
-    <script src="questions.js?v=3"></script>
-    <script src="script.js?v=3"></script>
+    <!-- تحميل الملفات -->
+    <script src="questions.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
