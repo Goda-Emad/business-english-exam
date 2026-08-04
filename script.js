@@ -1,5 +1,6 @@
 // ===== Business English Exam - Main Application =====
-// Note: 'questions' is loaded from questions.js (global variable)
+// NOTE: 'questions' is loaded from questions.js (global variable)
+// DO NOT declare 'const questions' or 'var questions' in this file!
 
 let currentQuestionIndex = 0;
 let userAnswers = new Array(150).fill(null);
@@ -36,6 +37,8 @@ const reviewContainer = document.getElementById('review-container');
 if (typeof questions === 'undefined') {
     console.error('❌ questions.js not loaded!');
     alert('Error: Questions file not loaded. Please check your files.');
+} else {
+    console.log('✅ Questions loaded:', questions.length);
 }
 
 // ===== Helper: Show Page =====
@@ -62,8 +65,11 @@ function updateTimerDisplay() {
     const mins = Math.floor(timeRemaining / 60);
     const secs = timeRemaining % 60;
     timerEl.textContent = `⏱️ ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-    if (timeRemaining < 300) timerEl.classList.add('warning');
-    else timerEl.classList.remove('warning');
+    if (timeRemaining < 300) {
+        timerEl.classList.add('warning');
+    } else {
+        timerEl.classList.remove('warning');
+    }
 }
 
 // ===== Render Question =====
@@ -102,11 +108,19 @@ function renderQuestion(index) {
         if (examSubmitted) {
             div.classList.add('disabled');
             if (optIndex === q.correct) div.classList.add('correct');
-            if (userAnswers[index] === optIndex && userAnswers[index] !== q.correct) div.classList.add('wrong');
-            if (userAnswers[index] === optIndex) div.classList.add('selected');
+            if (userAnswers[index] === optIndex && userAnswers[index] !== q.correct) {
+                div.classList.add('wrong');
+            }
+            if (userAnswers[index] === optIndex) {
+                div.classList.add('selected');
+            }
         } else {
-            if (userAnswers[index] === optIndex) div.classList.add('selected');
-            div.addEventListener('click', () => selectOption(index, optIndex));
+            if (userAnswers[index] === optIndex) {
+                div.classList.add('selected');
+            }
+            div.addEventListener('click', function() {
+                selectOption(index, optIndex);
+            });
         }
 
         div.innerHTML = `
@@ -244,7 +258,7 @@ function restartExam() {
 }
 
 // ===== Keyboard Shortcuts =====
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', function(e) {
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
         if (!examSubmitted && !btnNext.disabled) goToNext();
     } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
@@ -277,5 +291,4 @@ btnReview.addEventListener('click', toggleReview);
 showPage('page-instructions');
 updateTimerDisplay();
 
-console.log('✅ Business English Exam loaded successfully!');
-console.log('📝 Total questions:', questions ? questions.length : 'ERROR: questions not loaded');
+console.log('✅ Business English Exam ready!');
