@@ -1,351 +1,445 @@
 // ============================================================
-// Business English Exam - Main Application
+// Business English Exam — script.js v5
 // ============================================================
 
-console.log('🚀 SCRIPT LOADED! (v4)');
-
-// ===== Check if questions are loaded =====
-if (typeof questions === 'undefined') {
-    console.error('❌ questions.js not loaded!');
-    alert('Error: Questions file not loaded.');
-} else {
-    console.log('✅ Questions loaded:', questions.length);
+// ─── Sanity check ────────────────────────────────────────────
+if (typeof questions === 'undefined' || !questions.length) {
+  document.body.innerHTML =
+    '<div style="color:#fff;text-align:center;padding:60px;font-family:sans-serif">' +
+    '<h2>❌ Error: questions.js not loaded</h2>' +
+    '<p>Make sure questions.js is in the same folder.</p></div>';
+  throw new Error('questions.js missing');
 }
 
-// ===== Variables =====
-let currentQuestionIndex = 0;
-let userAnswers = new Array(150).fill(null);
-let examSubmitted = false;
-let timerInterval = null;
-let timeRemaining = 3600;
-let timerStarted = false;
+// ─── State ───────────────────────────────────────────────────
+const TOTAL        = questions.length;          // 150
+let currentIndex   = 0;
+let userAnswers    = new Array(TOTAL).fill(null);
+let examSubmitted  = false;
+let timerInterval  = null;
+let timeRemaining  = 3600;                       // 60 min
+let timerStarted   = false;
+let reviewVisible  = false;
 
-// ===== DOM Elements =====
-const pageInstructions = document.getElementById('page-instructions');
-const pageExam = document.getElementById('page-exam');
-const pageResults = document.getElementById('page-results');
+// ─── DOM refs ────────────────────────────────────────────────
+const pages = {
+  instructions : document.getElementById('page-instructions'),
+  exam         : document.getElementById('page-exam'),
+  results      : document.getElementById('page-results'),
+};
 
-const btnStart = document.getElementById('btn-start');
-const btnPrev = document.getElementById('btn-prev');
-const btnNext = document.getElementById('btn-next');
-const btnSubmit = document.getElementById('btn-submit');
-const btnRestart = document.getElementById('btn-restart');
-const btnReview = document.getElementById('btn-review');
+const el = {
+  qCounter     : document.getElementById('q-counter'),
+  timer        : document.getElementById('timer'),
+  progressBar  : document.getElementById('progress-bar'),
+  qNumber      : document.getElementById('q-number'),
+  qSession     : document.getElementById('q-session'),
+  diffBadge    : document.getElementById('diff-badge'),
+  qText        : document.getElementById('q-text'),
+  options      : document.getElementById('options-container'),
+  explanation  : document.getElementById('explanation-box'),
+  explText     : document.getElementById('explanation-text'),
+  dotsNav      : document.getElementById('dots-nav'),
 
-const qCounter = document.getElementById('q-counter');
-const timerEl = document.getElementById('timer');
-const progressBar = document.getElementById('progress-bar');
-const qNumber = document.getElementById('q-number');
-const diffBadge = document.getElementById('diff-badge');
-const qText = document.getElementById('q-text');
-const optionsContainer = document.getElementById('options-container');
-const explanationBox = document.getElementById('explanation-box');
-const explanationText = document.getElementById('explanation-text');
-const reviewSection = document.getElementById('review-section');
-const reviewContainer = document.getElementById('review-container');
+  btnPrev      : document.getElementById('btn-prev'),
+  btnNext      : document.getElementById('btn-next'),
+  btnSubmit    : document.getElementById('btn-submit'),
+
+  scoreNum     : document.getElementById('score-number'),
+  ringFill     : document.getElementById('ring-fill'),
+  resultsTitle : document.getElementById('results-title'),
+  resultsMsg   : document.getElementById('results-msg'),
+  correctCount : document.getElementById('correct-count'),
+  wrongCount   : document.getElementById('wrong-count'),
+  skippedCount : document.getElementById('skipped-count'),
+
+  reviewSection: document.getElementById('review-section'),
+  reviewContainer: document.getElementById('review-container'),
+};
+
+// ─── Helpers ─────────────────────────────────────────────────
+function showPage(name) {
+  Object.values(pages).forEach(p => p.classList.remove('active'));
+  pages[name].classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 // ============================================================
-// ===== START EXAM FUNCTION =====
+// START EXAM
 // ============================================================
 function startExam() {
-    console.log('🔄 START EXAM FUNCTION CALLED!');
-    console.log('📄 Current page:', document.querySelector('.page.active')?.id);
-    
-    // إخفاء صفحة التعليمات وإظهار صفحة الاختبار
-    pageInstructions.classList.remove('active');
-    pageExam.classList.add('active');
-    
-    console.log('✅ Page switched to exam');
-    
-    // عرض أول سؤال
-    renderQuestion(0);
-    
-    // بدء التايمر
-    startTimer();
-    
-    console.log('✅ Exam started successfully!');
+  showPage('exam');
+  buildDotsNav();
+  renderQuestion(0);
+  startTimer();
 }
 
 // ============================================================
-// ===== Timer =====
+// TIMER
 // ============================================================
 function startTimer() {
-    if (timerStarted) return;
-    console.log('⏱️ Timer started!');
-    timerStarted = true;
-    timerInterval = setInterval(() => {
-        timeRemaining--;
-        updateTimerDisplay();
-        if (timeRemaining <= 0) {
-            clearInterval(timerInterval);
-            submitExam();
-        }
-    }, 1000);
+  if (timerStarted) return;
+  timerStarted = true;
+  updateTimerDisplay();
+
+  timerInterval = setInterval(() => {
+    timeRemaining--;
+    updateTimerDisplay();
+    if (timeRemaining <= 0) {
+      clearInterval(timerInterval);
+      autoSubmit();
+    }
+  }, 1000);
 }
 
 function updateTimerDisplay() {
-    const mins = Math.floor(timeRemaining / 60);
-    const secs = timeRemaining % 60;
-    timerEl.textContent = `⏱️ ${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-    if (timeRemaining < 300) timerEl.classList.add('warning');
-    else timerEl.classList.remove('warning');
+  const m = Math.floor(timeRemaining / 60);
+  const s = timeRemaining % 60;
+  el.timer.textContent =
+    `⏱️ ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.timer.classList.toggle('warning', timeRemaining < 300);
+}
+
+function autoSubmit() {
+  if (!examSubmitted) submitExam(true);
 }
 
 // ============================================================
-// ===== Render Question =====
+// RENDER QUESTION
 // ============================================================
 function renderQuestion(index) {
-    console.log('📝 Rendering question:', index);
-    
-    if (typeof questions === 'undefined') {
-        qText.textContent = '❌ Error: Questions not loaded!';
-        return;
-    }
+  const q = questions[index];
+  if (!q) return;
 
-    const q = questions[index];
-    if (!q) {
-        console.error('Question not found at index:', index);
-        return;
-    }
+  currentIndex = index;
 
-    qCounter.textContent = `${index + 1} / ${questions.length}`;
-    progressBar.style.width = `${((index + 1) / questions.length) * 100}%`;
+  // ── Header ──
+  el.qCounter.textContent = `${index + 1} / ${TOTAL}`;
+  el.progressBar.style.width = `${((index + 1) / TOTAL) * 100}%`;
+  el.qNumber.textContent = `Question ${index + 1}`;
 
-    qNumber.textContent = `Question ${index + 1}`;
-    const diffMap = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
-    diffBadge.textContent = diffMap[q.difficulty] || 'Medium';
-    diffBadge.className = `difficulty-badge ${q.difficulty}`;
+  // Session label
+  if (el.qSession) el.qSession.textContent = q.session || '';
 
-    qText.textContent = q.question;
+  // Difficulty badge
+  const diffLabel = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
+  el.diffBadge.textContent = diffLabel[q.difficulty] || 'Medium';
+  el.diffBadge.className   = `diff-badge ${q.difficulty}`;
 
-    optionsContainer.innerHTML = '';
-    const letters = ['A', 'B', 'C', 'D'];
-    q.options.forEach((option, optIndex) => {
-        const div = document.createElement('div');
-        div.className = 'option-item';
-        div.dataset.index = optIndex;
+  // Question text
+  el.qText.textContent = q.question;
 
-        div.addEventListener('click', function() {
-            selectOption(index, optIndex);
-        });
+  // ── Options ──
+  el.options.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
 
-        div.innerHTML = `
-            <span class="letter">${letters[optIndex]}.</span>
-            <span class="text">${option}</span>
-        `;
-        optionsContainer.appendChild(div);
+  q.options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option-item';
+    div.setAttribute('role', 'button');
+    div.setAttribute('tabindex', '0');
+    div.dataset.idx = i;
+
+    div.innerHTML =
+      `<span class="letter">${letters[i]}</span>` +
+      `<span class="text">${opt}</span>`;
+
+    div.addEventListener('click', () => selectOption(index, i));
+    div.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') selectOption(index, i);
     });
 
-    explanationBox.style.display = 'none';
-    btnPrev.disabled = index === 0;
-    btnNext.disabled = index === questions.length - 1;
+    el.options.appendChild(div);
+  });
+
+  // ── Restore previous answer if any ──
+  if (userAnswers[index] !== null) {
+    showFeedback(index, userAnswers[index], false);
+  } else {
+    el.explanation.hidden = true;
+  }
+
+  // ── Nav buttons ──
+  el.btnPrev.disabled = index === 0;
+  el.btnNext.disabled = index === TOTAL - 1;
+
+  // ── Dots ──
+  updateDots(index);
 }
 
 // ============================================================
-// ===== Select Option =====
+// SELECT OPTION
 // ============================================================
-function selectOption(index, optIndex) {
-    if (examSubmitted) return;
-    console.log('📌 Selected option:', optIndex);
-    userAnswers[index] = optIndex;
-    showImmediateFeedback(index, optIndex);
+function selectOption(qIndex, optIndex) {
+  if (examSubmitted) return;
+  // Allow re-answer only if not already answered (locked after first pick)
+  if (userAnswers[qIndex] !== null) return;
+
+  userAnswers[qIndex] = optIndex;
+  showFeedback(qIndex, optIndex, true);
+  updateDots(currentIndex);
 }
 
 // ============================================================
-// ===== Show Immediate Feedback =====
+// SHOW FEEDBACK
 // ============================================================
-function showImmediateFeedback(index, selectedIndex) {
-    const q = questions[index];
-    if (!q) return;
-    
-    const options = document.querySelectorAll('.option-item');
-    
-    options.forEach(opt => {
-        opt.classList.remove('selected', 'correct', 'wrong', 'show-correct', 'disabled');
-    });
-    
-    options.forEach((opt, i) => {
-        opt.classList.add('disabled');
-        
-        if (i === selectedIndex) {
-            if (i === q.correct) {
-                opt.classList.add('correct');
-                opt.classList.add('selected');
-            } else {
-                opt.classList.add('wrong');
-                opt.classList.add('selected');
-            }
-        }
-        
-        if (i === q.correct && i !== selectedIndex) {
-            opt.classList.add('show-correct');
-        }
-        
-        if (i === q.correct && i === selectedIndex) {
-            opt.classList.remove('show-correct');
-            opt.classList.add('correct');
-        }
-    });
-    
-    explanationBox.style.display = 'block';
-    explanationText.textContent = q.explanation;
-}
+function showFeedback(qIndex, selectedIndex, animate) {
+  const q    = questions[qIndex];
+  const opts = el.options.querySelectorAll('.option-item');
 
-// ============================================================
-// ===== Navigation =====
-// ============================================================
-function goToPrev() {
-    if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
-        renderQuestion(currentQuestionIndex);
+  opts.forEach((opt, i) => {
+    opt.classList.remove('correct', 'wrong', 'show-correct', 'disabled');
+    opt.classList.add('disabled');
+
+    if (i === selectedIndex) {
+      opt.classList.add(i === q.correct ? 'correct' : 'wrong');
+    } else if (i === q.correct) {
+      opt.classList.add('show-correct');
     }
+  });
+
+  // Explanation
+  el.explText.textContent = q.explanation;
+  if (animate) {
+    el.explanation.hidden = false;
+    el.explanation.style.animation = 'none';
+    requestAnimationFrame(() => {
+      el.explanation.style.animation = '';
+    });
+  } else {
+    el.explanation.hidden = false;
+  }
 }
 
-function goToNext() {
-    if (currentQuestionIndex < questions.length - 1) {
-        currentQuestionIndex++;
-        renderQuestion(currentQuestionIndex);
+// ============================================================
+// DOTS NAVIGATOR
+// ============================================================
+function buildDotsNav() {
+  if (!el.dotsNav) return;
+  el.dotsNav.innerHTML = '';
+  for (let i = 0; i < TOTAL; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'dot';
+    btn.setAttribute('aria-label', `Go to question ${i + 1}`);
+    btn.addEventListener('click', () => {
+      renderQuestion(i);
+    });
+    el.dotsNav.appendChild(btn);
+  }
+}
+
+function updateDots(currentIdx) {
+  if (!el.dotsNav) return;
+  const dots = el.dotsNav.querySelectorAll('.dot');
+  dots.forEach((dot, i) => {
+    dot.className = 'dot';
+    if (i === currentIdx) {
+      dot.classList.add('current');
+    } else if (examSubmitted && userAnswers[i] !== null) {
+      const isCorrect = userAnswers[i] === questions[i].correct;
+      dot.classList.add(isCorrect ? 'correct-dot' : 'wrong-dot');
+    } else if (userAnswers[i] !== null) {
+      dot.classList.add('answered');
     }
+  });
 }
 
 // ============================================================
-// ===== Submit Exam =====
+// SUBMIT EXAM
 // ============================================================
-function submitExam() {
-    if (examSubmitted) return;
+function submitExam(forced = false) {
+  if (examSubmitted) return;
+
+  if (!forced) {
     const answered = userAnswers.filter(a => a !== null).length;
-    if (answered < questions.length) {
-        if (!confirm(`You have answered ${answered} out of ${questions.length}. Submit anyway?`)) return;
+    const skipped  = TOTAL - answered;
+    if (skipped > 0) {
+      const go = confirm(
+        `You have ${skipped} unanswered question${skipped > 1 ? 's' : ''}.\n` +
+        `Submit anyway?`
+      );
+      if (!go) return;
     }
-    examSubmitted = true;
-    clearInterval(timerInterval);
-    pageExam.classList.remove('active');
-    pageResults.classList.add('active');
-    displayResults();
+  }
+
+  examSubmitted = true;
+  clearInterval(timerInterval);
+
+  // Colour all dots
+  updateDots(-1);
+
+  showPage('results');
+  displayResults();
 }
 
 // ============================================================
-// ===== Display Results =====
+// DISPLAY RESULTS
 // ============================================================
 function displayResults() {
-    let correct = 0;
-    let wrong = 0;
-    const reviewData = [];
+  let correct = 0, wrong = 0, skipped = 0;
+  const reviewData = [];
 
-    questions.forEach((q, index) => {
-        const userAns = userAnswers[index];
-        const isCorrect = userAns === q.correct;
-        if (isCorrect) correct++;
-        else wrong++;
-        reviewData.push({ question: q, userAnswer: userAns, isCorrect });
-    });
+  questions.forEach((q, i) => {
+    const ans       = userAnswers[i];
+    const isCorrect = ans === q.correct;
+    if (ans === null)   skipped++;
+    else if (isCorrect) correct++;
+    else                wrong++;
+    reviewData.push({ question: q, userAnswer: ans, isCorrect });
+  });
 
-    const percentage = Math.round((correct / questions.length) * 100);
+  window._reviewData = reviewData;
 
-    document.getElementById('score-number').textContent = `${percentage}%`;
-    document.getElementById('correct-count').textContent = correct;
-    document.getElementById('wrong-count').textContent = wrong;
-    document.getElementById('total-count').textContent = questions.length;
+  const pct = Math.round((correct / TOTAL) * 100);
 
-    window._reviewData = reviewData;
+  // Score ring animation
+  const circumference = 2 * Math.PI * 52; // r=52 → 326.7
+  if (el.ringFill) {
+    el.ringFill.style.strokeDasharray  = circumference;
+    el.ringFill.style.strokeDashoffset = circumference;
+    // Inject gradient into SVG
+    const svg = el.ringFill.closest('svg');
+    if (svg && !svg.querySelector('defs')) {
+      svg.insertAdjacentHTML('afterbegin',
+        `<defs>
+          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#6c63ff"/>
+            <stop offset="100%" stop-color="#a78bfa"/>
+          </linearGradient>
+        </defs>`
+      );
+      el.ringFill.setAttribute('stroke', 'url(#ringGrad)');
+    }
+    setTimeout(() => {
+      el.ringFill.style.strokeDashoffset =
+        circumference - (pct / 100) * circumference;
+    }, 200);
+  }
+
+  // Percentage
+  el.scoreNum.textContent = `${pct}%`;
+
+  // Title & message
+  const { title, msg } = getResultMessage(pct);
+  if (el.resultsTitle) el.resultsTitle.textContent = title;
+  if (el.resultsMsg)   el.resultsMsg.textContent   = msg;
+
+  // Stats
+  el.correctCount.textContent = correct;
+  el.wrongCount.textContent   = wrong;
+  if (el.skippedCount) el.skippedCount.textContent = skipped;
+}
+
+function getResultMessage(pct) {
+  if (pct >= 90) return { title: '🏆 Outstanding!',  msg: 'Excellent work — you mastered Business English!' };
+  if (pct >= 75) return { title: '🎉 Well Done!',    msg: 'Great performance — keep building on this!' };
+  if (pct >= 60) return { title: '👍 Good Effort!',  msg: 'Solid result — review the explanations to improve.' };
+  if (pct >= 40) return { title: '📚 Keep Studying', msg: 'You\'re on your way — revisit the course material.' };
+  return           { title: '💪 Don\'t Give Up!',  msg: 'Review the lectures and try again — you can do it!' };
 }
 
 // ============================================================
-// ===== Restart Exam =====
+// RESTART
 // ============================================================
 function restartExam() {
-    if (!confirm('Restart exam? All progress lost.')) return;
-    clearInterval(timerInterval);
-    timerStarted = false;
-    timeRemaining = 3600;
-    examSubmitted = false;
-    userAnswers = new Array(150).fill(null);
-    currentQuestionIndex = 0;
-    timerEl.classList.remove('warning');
-    updateTimerDisplay();
-    reviewSection.style.display = 'none';
-    btnReview.textContent = '📖 Review Answers';
-    pageResults.classList.remove('active');
-    pageExam.classList.add('active');
-    renderQuestion(0);
-    startTimer();
+  if (!confirm('Restart exam? All your progress will be lost.')) return;
+
+  clearInterval(timerInterval);
+  timerStarted   = false;
+  timeRemaining  = 3600;
+  examSubmitted  = false;
+  currentIndex   = 0;
+  userAnswers    = new Array(TOTAL).fill(null);
+  reviewVisible  = false;
+
+  el.timer.classList.remove('warning');
+  updateTimerDisplay();
+
+  if (el.reviewSection) el.reviewSection.hidden = true;
+
+  showPage('exam');
+  buildDotsNav();
+  renderQuestion(0);
+  startTimer();
 }
 
 // ============================================================
-// ===== Toggle Review =====
+// TOGGLE REVIEW
 // ============================================================
 function toggleReview() {
-    if (reviewSection.style.display === 'none') {
-        reviewSection.style.display = 'block';
-        btnReview.textContent = '📖 Hide Review';
-        renderReview();
-    } else {
-        reviewSection.style.display = 'none';
-        btnReview.textContent = '📖 Review Answers';
-    }
+  reviewVisible = !reviewVisible;
+  if (el.reviewSection) el.reviewSection.hidden = !reviewVisible;
+
+  // Update dots to show correct/wrong colours
+  if (reviewVisible) {
+    renderReview();
+    updateDots(-1);
+  }
 }
 
 function renderReview() {
-    const data = window._reviewData || [];
-    reviewContainer.innerHTML = '';
-    const letters = ['A', 'B', 'C', 'D'];
+  const data    = window._reviewData || [];
+  const letters = ['A', 'B', 'C', 'D'];
+  el.reviewContainer.innerHTML = '';
 
-    data.forEach((item, index) => {
-        const div = document.createElement('div');
-        div.className = `review-item ${item.isCorrect ? 'correct-review' : 'wrong-review'}`;
-        const userLetter = item.userAnswer !== null ? letters[item.userAnswer] : 'Not answered';
-        const correctLetter = letters[item.question.correct];
+  data.forEach((item, i) => {
+    const q          = item.question;
+    const userLetter = item.userAnswer !== null ? letters[item.userAnswer] : '—';
+    const corrLetter = letters[q.correct];
+    const cls        = item.isCorrect ? 'correct-review' : 'wrong-review';
+    const skipped    = item.userAnswer === null;
 
-        div.innerHTML = `
-            <div class="review-q">${index + 1}. ${item.question.question}</div>
-            <div class="review-answer">
-                Your answer: <span class="${item.isCorrect ? 'correct-answer' : 'wrong-answer'}">${userLetter}</span>
-                ${!item.isCorrect ? ` | Correct: <span class="correct-answer">${correctLetter}</span>` : ''}
-            </div>
-            <div class="review-explanation">💡 ${item.question.explanation}</div>
-        `;
-        reviewContainer.appendChild(div);
-    });
+    const div = document.createElement('div');
+    div.className = `review-item ${cls}`;
+
+    div.innerHTML = `
+      <div class="review-q">
+        <span style="color:#6b7280;font-size:.8rem;font-weight:700;margin-right:6px">Q${i + 1}</span>
+        ${q.question}
+      </div>
+      <div class="review-answer" style="margin:8px 0">
+        ${skipped
+          ? '<span style="color:#d97706;font-weight:600">⏭️ Not answered</span>'
+          : `Your answer: <span class="${item.isCorrect ? 'correct-answer' : 'wrong-answer'}">${userLetter}</span>`
+        }
+        ${!item.isCorrect
+          ? ` &nbsp;|&nbsp; Correct: <span class="correct-answer">${corrLetter}. ${q.options[q.correct]}</span>`
+          : ''
+        }
+      </div>
+      <div class="review-explanation">💡 ${q.explanation}</div>
+    `;
+
+    el.reviewContainer.appendChild(div);
+  });
 }
 
 // ============================================================
-// ===== Event Listeners =====
+// NAVIGATION
 // ============================================================
-btnPrev.addEventListener('click', goToPrev);
-btnNext.addEventListener('click', goToNext);
-
-btnSubmit.addEventListener('click', function() {
-    if (examSubmitted) return;
-    if (confirm('Submit exam?')) submitExam();
-});
-
-btnRestart.addEventListener('click', restartExam);
-btnReview.addEventListener('click', toggleReview);
-
-// ============================================================
-// ===== Keyboard Shortcuts =====
-// ============================================================
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-        if (!examSubmitted && !btnNext.disabled) goToNext();
-    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-        if (!examSubmitted && !btnPrev.disabled) goToPrev();
-    }
-});
-
-// ============================================================
-// ===== Init =====
-// ============================================================
-console.log('✅ Business English Exam ready!');
-console.log('📝 Total questions:', questions ? questions.length : 'ERROR');
-console.log('🔍 startExam function:', typeof startExam);
-console.log('🔍 btnStart element:', btnStart);
-
-// ===== اختبار تلقائي =====
-console.log('🔄 Running auto-test...');
-if (typeof startExam === 'function') {
-    console.log('✅ startExam function is defined and ready!');
-} else {
-    console.log('❌ startExam function NOT defined!');
+function goToPrev() {
+  if (currentIndex > 0) renderQuestion(currentIndex - 1);
 }
-console.log('🔄 Auto-test complete.');
+function goToNext() {
+  if (currentIndex < TOTAL - 1) renderQuestion(currentIndex + 1);
+}
+
+// ─── Button listeners ────────────────────────────────────────
+el.btnPrev.addEventListener('click', goToPrev);
+el.btnNext.addEventListener('click', goToNext);
+el.btnSubmit.addEventListener('click', () => submitExam(false));
+
+// ─── Keyboard shortcuts ──────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (pages.exam.classList.contains('active') && !examSubmitted) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goToNext();
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goToPrev();
+
+    // Press 1-4 to select option
+    const num = parseInt(e.key);
+    if (num >= 1 && num <= 4) selectOption(currentIndex, num - 1);
+  }
+});
+
+// ─── Init display ────────────────────────────────────────────
+updateTimerDisplay();
