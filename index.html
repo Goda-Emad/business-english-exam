@@ -1,144 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    <title>Business English Exam</title>
-    <link rel="stylesheet" href="style.css?v=4" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="description" content="Business English Interactive MCQ Exam — 150 questions covering vocabulary, expressions, and grammar from all 26 lectures." />
+
+  <title>Business English Exam</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>" />
+
+  <link rel="stylesheet" href="style.css?v=5" />
 </head>
 <body>
 
-    <!-- ===== PAGE: INSTRUCTIONS ===== -->
-    <div id="page-instructions" class="page active">
-        <div class="container">
-            <div class="card">
-                <div class="exam-header">
-                    <span class="badge">📚 Business English</span>
-                    <h1>Interactive MCQ Exam</h1>
-                    <p class="subtitle">Complete Lecture Notes — Vocabulary, Expressions & Grammar</p>
-                </div>
+  <!-- ════════════════════════════════════════
+       PAGE 1 — INSTRUCTIONS / LANDING
+  ════════════════════════════════════════ -->
+  <div id="page-instructions" class="page active">
+    <div class="container">
 
-                <div class="info-grid">
-                    <div class="info-item">
-                        <span class="icon">📝</span>
-                        <div><strong>150 Questions</strong><span>Covering all chapters</span></div>
-                    </div>
-                    <div class="info-item">
-                        <span class="icon">⏱️</span>
-                        <div><strong>60 Minutes</strong><span>Time limit</span></div>
-                    </div>
-                    <div class="info-item">
-                        <span class="icon">🎯</span>
-                        <div><strong>Difficulty</strong><span>30% Easy · 50% Medium · 20% Hard</span></div>
-                    </div>
-                    <div class="info-item">
-                        <span class="icon">📊</span>
-                        <div><strong>Instant Feedback</strong><span>Score & explanations after submission</span></div>
-                    </div>
-                </div>
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-badge">📚 Business English</div>
+        <h1 class="hero-title">Interactive MCQ Exam</h1>
+        <p class="hero-subtitle">
+          Complete Lecture Notes — Vocabulary, Expressions &amp; Grammar<br />
+          <span class="hero-meta">26 Lectures · 150 Questions · Grammar Summary</span>
+        </p>
+      </div>
 
-                <div class="instructions-list">
-                    <h3>📋 Instructions</h3>
-                    <ul>
-                        <li>Answer all <strong>150</strong> multiple-choice questions</li>
-                        <li>Each question has <strong>4 options</strong> (A, B, C, D)</li>
-                        <li>You can navigate using <strong>Next / Previous</strong> buttons</li>
-                        <li>Use the <strong>progress bar</strong> to track your progress</li>
-                        <li>Click <strong>Submit Exam</strong> when you're done</li>
-                        <li>You'll get your score and explanations for each question</li>
-                    </ul>
-                </div>
-
-                <!-- ✅ الزر مع onclick مباشر -->
-                <button id="btn-start" class="btn btn-primary btn-large" onclick="startExam()">
-                    🚀 Start Exam
-                </button>
-            </div>
+      <!-- Stats row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-icon">📝</div>
+          <div class="stat-info">
+            <strong>150</strong>
+            <span>Questions</span>
+          </div>
         </div>
-    </div>
-
-    <!-- ===== PAGE: EXAM ===== -->
-    <div id="page-exam" class="page">
-        <div class="container">
-            <div class="exam-header-bar">
-                <div class="header-left">
-                    <span class="exam-title">📚 Business English Exam</span>
-                </div>
-                <div class="header-right">
-                    <span class="question-counter" id="q-counter">1 / 150</span>
-                    <span class="timer" id="timer">⏱️ 60:00</span>
-                </div>
-            </div>
-
-            <div class="progress-container">
-                <div class="progress-bar" id="progress-bar" style="width: 0%;"></div>
-            </div>
-
-            <div class="card question-card">
-                <div class="question-header">
-                    <span class="question-number" id="q-number">Question 1</span>
-                    <span class="difficulty-badge" id="diff-badge">Easy</span>
-                </div>
-                <p class="question-text" id="q-text">Loading question...</p>
-
-                <div class="options-container" id="options-container"></div>
-
-                <div class="explanation-box" id="explanation-box" style="display: none;">
-                    <h4>💡 Explanation</h4>
-                    <p id="explanation-text"></p>
-                </div>
-
-                <div class="navigation-buttons">
-                    <button id="btn-prev" class="btn btn-secondary">◀ Previous</button>
-                    <button id="btn-submit" class="btn btn-success">📤 Submit Exam</button>
-                    <button id="btn-next" class="btn btn-secondary">Next ▶</button>
-                </div>
-            </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏱️</div>
+          <div class="stat-info">
+            <strong>60 min</strong>
+            <span>Time Limit</span>
+          </div>
         </div>
-    </div>
-
-    <!-- ===== PAGE: RESULTS ===== -->
-    <div id="page-results" class="page">
-        <div class="container">
-            <div class="card results-card">
-                <div class="results-header">
-                    <h1>📊 Exam Results</h1>
-                    <div class="score-circle">
-                        <span class="score-number" id="score-number">0%</span>
-                    </div>
-                </div>
-
-                <div class="results-stats">
-                    <div class="stat-item correct">
-                        <span class="stat-value" id="correct-count">0</span>
-                        <span class="stat-label">✅ Correct</span>
-                    </div>
-                    <div class="stat-item wrong">
-                        <span class="stat-value" id="wrong-count">0</span>
-                        <span class="stat-label">❌ Wrong</span>
-                    </div>
-                    <div class="stat-item total">
-                        <span class="stat-value" id="total-count">150</span>
-                        <span class="stat-label">📝 Total</span>
-                    </div>
-                </div>
-
-                <button id="btn-restart" class="btn btn-primary">🔄 Restart Exam</button>
-                <button id="btn-review" class="btn btn-secondary">📖 Review Answers</button>
-            </div>
-
-            <div id="review-section" style="display: none; margin-top: 30px;">
-                <h2 style="color: white;">📖 Answer Review</h2>
-                <div id="review-container"></div>
-            </div>
+        <div class="stat-card">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-info">
+            <strong>Mixed</strong>
+            <span>Difficulty</span>
+          </div>
         </div>
-    </div>
+        <div class="stat-card">
+          <div class="stat-icon">💡</div>
+          <div class="stat-info">
+            <strong>Instant</strong>
+            <span>Feedback</span>
+          </div>
+        </div>
+      </div>
 
-    <!-- ✅ تحميل الملفات بترتيب صحيح -->
-    <script src="questions.js?v=4"></script>
-    <script src="script.js?v=4"></script>
+      <!-- Difficulty breakdown -->
+      <div class="diff-breakdown">
+        <div class="diff-item easy">
+          <span class="diff-dot"></span>
+          <span>Easy</span>
+          <strong>30%</strong>
+        </div>
+        <div class="diff-divider"></div>
+        <div class="diff-item medium">
+          <span class="diff-dot"></span>
+          <span>Medium</span>
+          <strong>50%</strong>
+        </div>
+        <div class="diff-divider"></div>
+        <div class="diff-item hard">
+          <span class="diff-dot"></span>
+          <span>Hard</span>
+          <strong>20%</strong>
+        </div>
+      </div>
+
+      <!-- Instructions card -->
+      <div class="card instructions-card">
+        <h3 class="card-title">📋 How It Works</h3>
+        <ul class="instructions-list">
+          <li>
+            <span class="li-num">1</span>
+            Answer all <strong>150</strong> multiple-choice questions (A, B, C, D)
+          </li>
+          <li>
+            <span class="li-num">2</span>
+            Navigate freely with <strong>Next / Previous</strong> — your answers are saved
+          </li>
+          <li>
+            <span class="li-num">3</span>
+            Watch the <strong>progress bar</strong> and <strong>timer</strong> at the top
+          </li>
+          <li>
+            <span class="li-num">4</span>
+            Click <strong>Submit Exam</strong> when you finish — get your score instantly
+          </li>
+          <li>
+            <span class="li-num">5</span>
+            Review every question with <strong>correct answers &amp; explanations</strong>
+          </li>
+        </ul>
+      </div>
+
+      <!-- CTA -->
+      <button class="btn btn-start" onclick="startExam()">
+        <span>🚀</span> Start Exam
+      </button>
+
+      <p class="start-note">Good luck! Questions are based on your course material only.</p>
+
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       PAGE 2 — EXAM
+  ════════════════════════════════════════ -->
+  <div id="page-exam" class="page">
+    <div class="container">
+
+      <!-- Top bar -->
+      <header class="exam-topbar">
+        <div class="topbar-left">
+          <span class="topbar-brand">📚 Business English</span>
+        </div>
+        <div class="topbar-right">
+          <span class="q-counter" id="q-counter">1 / 150</span>
+          <span class="timer" id="timer">⏱️ 60:00</span>
+        </div>
+      </header>
+
+      <!-- Progress bar -->
+      <div class="progress-track" role="progressbar" aria-label="Exam progress">
+        <div class="progress-fill" id="progress-bar" style="width:0%"></div>
+      </div>
+
+      <!-- Question card -->
+      <div class="card question-card">
+
+        <div class="question-meta">
+          <span class="q-label" id="q-number">Question 1</span>
+          <span class="diff-badge" id="diff-badge">Easy</span>
+        </div>
+
+        <p class="q-session" id="q-session"></p>
+        <p class="q-text" id="q-text">Loading...</p>
+
+        <div class="options-grid" id="options-container"></div>
+
+        <!-- Explanation (shown after answer) -->
+        <div class="explanation-box" id="explanation-box" hidden>
+          <div class="explanation-icon">💡</div>
+          <div>
+            <strong>Explanation</strong>
+            <p id="explanation-text"></p>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-row">
+          <button id="btn-prev" class="btn btn-ghost">◀ Previous</button>
+          <button id="btn-submit" class="btn btn-danger">📤 Submit Exam</button>
+          <button id="btn-next" class="btn btn-primary-sm">Next ▶</button>
+        </div>
+
+      </div>
+
+      <!-- Question dots navigator -->
+      <div class="dots-nav" id="dots-nav" aria-label="Question navigator"></div>
+
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       PAGE 3 — RESULTS
+  ════════════════════════════════════════ -->
+  <div id="page-results" class="page">
+    <div class="container">
+
+      <!-- Score hero -->
+      <div class="results-hero">
+        <div class="score-ring">
+          <svg viewBox="0 0 120 120" class="ring-svg">
+            <circle cx="60" cy="60" r="52" class="ring-bg" />
+            <circle cx="60" cy="60" r="52" class="ring-fill" id="ring-fill" />
+          </svg>
+          <div class="score-inner">
+            <span class="score-pct" id="score-number">0%</span>
+            <span class="score-label">Score</span>
+          </div>
+        </div>
+        <h2 class="results-title" id="results-title">Well done!</h2>
+        <p class="results-msg" id="results-msg"></p>
+      </div>
+
+      <!-- Stats -->
+      <div class="results-stats">
+        <div class="rs-card correct">
+          <span class="rs-val" id="correct-count">0</span>
+          <span class="rs-lbl">✅ Correct</span>
+        </div>
+        <div class="rs-card wrong">
+          <span class="rs-val" id="wrong-count">0</span>
+          <span class="rs-lbl">❌ Wrong</span>
+        </div>
+        <div class="rs-card skipped">
+          <span class="rs-val" id="skipped-count">0</span>
+          <span class="rs-lbl">⏭️ Skipped</span>
+        </div>
+        <div class="rs-card total">
+          <span class="rs-val">150</span>
+          <span class="rs-lbl">📝 Total</span>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="results-actions">
+        <button class="btn btn-start" onclick="restartExam()">🔄 Restart Exam</button>
+        <button class="btn btn-outline" onclick="toggleReview()">📖 Review Answers</button>
+      </div>
+
+      <!-- Review section -->
+      <div id="review-section" hidden>
+        <h2 class="review-heading">📖 Answer Review</h2>
+        <div id="review-container"></div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- Scripts -->
+  <script src="questions.js?v=5"></script>
+  <script src="script.js?v=5"></script>
+
 </body>
 </html>
